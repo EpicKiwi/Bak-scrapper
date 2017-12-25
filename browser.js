@@ -19,8 +19,8 @@ async function init(){
 }
 
 async function takeScreenshot(filesuffix){
-    increment++
-    var name = filesuffix ? `screenshot-${increment}-${filesuffix}.png` : `screenshot-${increment}.png`
+    renderId++
+    let name = filesuffix ? `screenshot-${renderId}-${filesuffix}.png` : `screenshot-${renderId}.png`
     await page.render(`./screenshots/${name}`)
     console.log(`Rendered ${name}`)
 }
@@ -38,8 +38,7 @@ function getInstance(){
 }
 
 exports.init = init
-exports.loadPage = loadPage
 exports.close = close
 exports.getPage = getPage
 exports.getInstance = getInstance
-exports.takeScreenshot = takeScreenshot()
+exports.takeScreenshot = takeScreenshot
