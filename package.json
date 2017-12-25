@@ -1,0 +1,22 @@
+{
+  "name": "ogriner",
+  "version": "1.0.0",
+  "description": "Un système de trading d'ogrines",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EpicKiwi/Ogriner.git"
+  },
+  "author": "EpicKiwi <me@epickiwi.fr>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EpicKiwi/Ogriner/issues"
+  },
+  "homepage": "https://github.com/EpicKiwi/Ogriner#readme",
+  "dependencies": {
+    "phantom": "^4.0.12"
+  }
+}
