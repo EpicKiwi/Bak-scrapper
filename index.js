@@ -6,8 +6,8 @@ const dpassword = "bananeavion66"
 ;(async function index(){
 
     await dbrowser.init(dusername,dpassword)
-    let rate = await dbrowser.getRate()
-    console.log(rate)
+    let offers = await dbrowser.getOgrinOffers()
+    console.log(offers)
     await dbrowser.close()
 
 })()
