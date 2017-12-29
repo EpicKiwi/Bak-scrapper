@@ -2,42 +2,50 @@ const browser = require("./browser")
 
 let credentials = {
     username: null,
-    password: null,
-    nickname: null
+    nickname: null,
+    connected: false
 }
 
 let dofusUrls = {
     login: "https://www.dofus.com/fr/identification",
-    bak: "https://www.dofus.com/fr/achat-bourses-kamas-ogrines"
+    bak: "https://www.dofus.com/fr/achat-bourses-kamas-ogrines",
+    logout: "https://account.ankama.com/sso?action=logout&from=https%3A%2F%2Fwww.dofus.com%2Ffr"
+}
+
+let bakSelectors = {
+    rate: "a[href=\"/fr/achat-bourses-kamas-ogrines/cours-kama-ogrines\"]",
+    kamaOffers: "a[href=\"/fr/achat-bourses-kamas-ogrines/0-francaise/achat-ogrines/toutes-offres\"]",
+    ogrinOffers: "a[href=\"/fr/achat-bourses-kamas-ogrines/0-francaise/achat-kamas/toutes-offres\"]",
+    createOffer: "a[href=\"/fr/achat-bourses-kamas-ogrines/0-francaise/achat-kamas/creer-offre\"]",
+    accounts: "a[href=\"/fr/achat-bourses-kamas-ogrines/banque-ogrines-kamas\"]"
 }
 
 let loadingDelay = 1000
 
-async function init(username,password){
-    credentials.username = username
-    credentials.password = password
+async function init(enableScreenshots){
     await browser.init()
-    await login()
+    if(enableScreenshots !== undefined)
+        browser.setScreenshotsEnabled(enableScreenshots)
 }
 
-function login(){
-
+function login(username,password){
     return new Promise(function(resolve,reject){
 
-        console.info(`Login to Dofus with username ${credentials.username}`)
+        credentials.username = username
+
         var page = browser.getPage()
 
         page.on("onLoadFinished", async data => {
 
             page.off("onLoadFinished")
-            await page.evaluate(function fieldFill(credentials) {
+            await page.evaluate(function fieldFill(credentials,password) {
                 var loginForm = document.querySelector("form[action=\"https://account.ankama.com/sso\"]")
                 var usernameField = document.getElementById("userlogin")
                 var passwordField = document.getElementById("userpass")
                 usernameField.value = credentials.username
-                passwordField.value = credentials.password
+                passwordField.value = password
                 loginForm.submit()
-            },credentials)
+            },credentials,password)
             await browser.takeScreenshot("prelogin")
             page.on("onLoadFinished", async data => {
 
@@ -55,10 +63,10 @@ function login(){
                 })
                 if(nickname){
                     credentials.nickname = nickname
-                    console.info(`Logged in as ${credentials.nickname}`)
+                    credentials.connected = true
                     return resolve()
                 } else {
-                    console.error("Can't login")
+                    credentials.connected = false
                     return reject(new Error("Unable to login to Dofus website"))
                 }
 
@@ -70,7 +78,7 @@ function login(){
 }
 
 function getWeekRate(){
-    return executeOnBakPage("a[href=\"/fr/achat-bourses-kamas-ogrines/cours-kama-ogrines\"]",function(){
+    return executeOnBakPage(bakSelectors.rate,function(){
         var rateBoxes = document.querySelectorAll(".ak-rate-block")
         if(rateBoxes.length == 2) {
             return {
@@ -85,9 +93,7 @@ function getWeekRate(){
 
 function getOgrinOffers(){
 
-    return executeOnBakPage(
-        "a[href=\"/fr/achat-bourses-kamas-ogrines/0-francaise/achat-kamas/toutes-offres\"]",
-        function(){
+    return executeOnBakPage(bakSelectors.ogrinOffers, function(){
             var offersLines = document.querySelectorAll(".ak-ladder tbody tr")
             if(offersLines.length > 0) {
                 var offers = []
@@ -106,7 +112,29 @@ function getOgrinOffers(){
                 return null
             }
         })
+}
 
+function getKamaOffers(){
+
+    return executeOnBakPage(bakSelectors.kamaOffers, function(){
+            var offersLines = document.querySelectorAll(".ak-ladder tbody tr")
+            if(offersLines.length > 0) {
+                var offers = []
+                for(var i = 0; i<offersLines.length; i++ ) {
+                    var el = offersLines[i]
+                    offers.push({
+                        ogrins: parseFloat(el.querySelector("td:nth-child(2)").innerText.replace(/ /g,'')),
+                        kamas: parseFloat(el.querySelector("td:nth-child(1)").innerText.replace(/ /g,'')),
+                        rate: parseFloat(el.querySelector("td:nth-child(3) .kamas").innerText.replace(/ /g,'')),
+                        unit: "k/o",
+                        type: "kama offer"
+                    })
+                }
+                return offers
+            } else {
+                return null
+            }
+        })
 }
 
 function executeOnBakPage(buttonSelector,evaluateCallback){
@@ -128,7 +156,40 @@ function executeOnBakPage(buttonSelector,evaluateCallback){
                 }
             },loadingDelay)
         })
+        page.open(dofusUrls.bak)
+    })
+}
+
+function checkMaintenance(){
+    return new Promise((resolve,reject) => {
+        let page = browser.getPage()
+        page.on("onLoadFinished", async data => {
+            page.off("onLoadFinished")
+            let isMaintenance = await page.evaluate(function(){
+                var maintenanceIndicator = document.querySelector(".ak-maintenance")
+                return !!maintenanceIndicator
+            })
+            await browser.takeScreenshot("maintenance")
+            return resolve(isMaintenance)
+        })
         page.open("https://www.dofus.com/fr/achat-bourses-kamas-ogrines/cours-kama-ogrines")
+    })
+}
+
+function logout(){
+    return new Promise(function(resolve,reject){
+        let page = browser.getPage()
+
+        page.on("onLoadFinished", async data => {
+            page.off("onLoadFinished")
+            credentials.username = null
+            credentials.connected = false
+            credentials.nickname = null
+            await browser.takeScreenshot("logout")
+            return resolve()
+        })
+
+        page.open(dofusUrls.logout)
     })
 }
 
@@ -138,9 +199,17 @@ async function close(){
 
 exports.init = init
 exports.close = close
+exports.login = login
+exports.logout = logout
 exports.getWeekRate = getWeekRate
 exports.getOgrinOffers = getOgrinOffers
+exports.getKamaOffers = getKamaOffers
+exports.checkMaintenance = checkMaintenance
 
 exports.getBrowser = () => {
     return browser
+}
+
+exports.getCredentials = () => {
+    return credentials
 }

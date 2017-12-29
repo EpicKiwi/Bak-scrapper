@@ -10,6 +10,7 @@ let settings = {
 let renderId = 0;
 let instance = null
 let page = null
+let screenshots = true
 
 async function init(){
     instance = await phantom.create()
@@ -19,6 +20,8 @@ async function init(){
 }
 
 async function takeScreenshot(filesuffix){
+    if(! screenshots)
+        return
     renderId++
     let name = filesuffix ? `screenshot-${renderId}-${filesuffix}.png` : `screenshot-${renderId}.png`
     await page.render(`./screenshots/${name}`)
@@ -42,3 +45,10 @@ exports.close = close
 exports.getPage = getPage
 exports.getInstance = getInstance
 exports.takeScreenshot = takeScreenshot
+
+exports.isScreenshotsEnabled = function isScreenshotsEnabled(){
+    return screenshots
+}
+exports.setScreenshotsEnabled = function setScreenshotsEnabled(enabled){
+    screenshots = enabled
+}
