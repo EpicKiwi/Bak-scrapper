@@ -6,7 +6,7 @@ const dpassword = "bananeavion66"
 ;(async function index(){
 
     try {
-        await dbrowser.init(false)
+        await dbrowser.init(true,"../screenshots")
         console.log("Logging in to Dofus website")
         await dbrowser.login(dusername, dpassword)
         console.log(`Logged in as ${dbrowser.getCredentials().nickname}`)
@@ -19,6 +19,9 @@ const dpassword = "bananeavion66"
             console.log("Loading kamas offers")
             offers = await dbrowser.getKamaOffers()
             console.log(`${offers.length} dofus offers`)
+            console.log("Loading bank")
+            let bank = await dbrowser.getBank()
+            console.log(bank)
             console.log(`Logging out ${dbrowser.getCredentials().nickname} from Dofus website`)
             await dbrowser.logout()
             console.log("Logged out")
