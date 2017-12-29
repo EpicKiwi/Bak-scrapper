@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EpicKiwi/Ogriner.git"
+    "url": "git+https://github.com/EpicKiwi/Bak-scrapper.git"
   },
   "author": "EpicKiwi <me@epickiwi.fr>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EpicKiwi/Ogriner/issues"
+    "url": "https://github.com/EpicKiwi/Bak-scrapper/issues"
   },
-  "homepage": "https://github.com/EpicKiwi/Ogriner#readme",
+  "homepage": "https://github.com/EpicKiwi/Bak-scrapper#readme",
   "dependencies": {
     "phantom": "^4.0.12"
   }
