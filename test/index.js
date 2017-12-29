@@ -1,7 +1,7 @@
 const dbrowser = require("../lib/dofusBrowser")
 
-const dusername = "torturaie"
-const dpassword = "bananeavion66"
+const dusername = process.argv[2]
+const dpassword = process.argv[3]
 
 ;(async function index(){
 
