@@ -1,10 +1,10 @@
 {
-  "name": "ogriner",
+  "name": "Bak-scrapper",
   "version": "1.0.0",
-  "description": "Un système d'analyse de marché d'ogrines pour en acheter au meilleur prix",
-  "main": "index.js",
+  "description": "Scrapping system for Dofus BAK",
+  "main": "lib/dofusBrowser.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",

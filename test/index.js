@@ -1,4 +1,4 @@
-const dbrowser = require("./dofusBrowser")
+const dbrowser = require("../lib/dofusBrowser")
 
 const dusername = "torturaie"
 const dpassword = "bananeavion66"
