@@ -24,7 +24,7 @@ const dpassword = process.argv[3]
             console.log(`${offers.length} ogrin offers`)
             console.log("Loading kamas offers")
             offers = await dbrowser.getKamaOffers()
-            console.log(`${offers.length} dofus offers`)
+            console.log(`${offers.length} kamas offers`)
             console.log("Loading bank")
             let bank = await dbrowser.getBank()
             console.log(`${bank.ogrins.amount} ogrins, ${bank.ogrins.linked} linked`)
@@ -36,6 +36,8 @@ const dpassword = process.argv[3]
             if(newServers.length > 1) {
                 await dbrowser.selectServer(newServers[1].id)
                 console.log(`Selected server ${newServers[1].name}`)
+                let offers = await dbrowser.getOgrinOffers()
+                console.log(`${offers.length} ogrin offers`)
             } else {
                 console.log("Only one server available")
             }
