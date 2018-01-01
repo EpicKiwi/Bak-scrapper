@@ -6,7 +6,7 @@ const dpassword = process.argv[3]
 ;(async function index(){
 
     try {
-        await dbrowser.init(true,"./screenshots")
+        await dbrowser.init(false,"./screenshots")
         console.log("Logging in to Dofus website")
         await dbrowser.login(dusername, dpassword)
         console.log(`Logged in as ${dbrowser.getCredentials().nickname}`)
